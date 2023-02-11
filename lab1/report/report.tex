@@ -18,4 +18,81 @@
 	(car(cdr(cdr(cdr'(1 2 3 4)))))
 \end{lstlisting}
 
+\section*{Задание 3}
+
+\begin{lstlisting}[]
+a) (CAADR ' ((blue cube) (red pyramid))) 
+b) (CDAR '((abc) (def) (ghi))) 
+c) (CADR ' ((abc) (def) (ghi)))
+d) (CADDR ' ((abc) (def) (ghi)))
+\end{lstlisting}
+
+\begin{enumerate}
+	\item RED
+	\item Nil
+	\item (DEF)
+	\item (GHI)
+\end{enumerate}
+
+\section*{Задание 4}
+
+\begin{lstlisting}[]
+	(list 'Fred 'and 'Wilma) 		 ---> (FRED AND WILMA)
+	(list 'Fred '(and Wilma))		 ---> (FRED (AND WILMA))
+	(cons Nil Nil) 					 ---> NIL
+	(cons T Nil) 					 ---> (T)
+	(cons Nil T) 					 ---> (NIL . T)
+	(list Nil) 						 ---> (NIL)
+	(cons ' (T) Nil) 				 ---> ((T))
+	(list ' (one two) ' (free temp)) ---> ((ONE TWO) (FREE TEMP))
+	(cons 'Fred '(and Wilma)) 		 ---> (FRED AND WILMA)
+	(cons 'Fred '(Wilma))   		 ---> (FRED WILMA)
+	(list Nil Nil) 					 ---> (NIL NIL)
+	(list T Nil)					 ---> (T NIL)
+	(list Nil T)					 ---> (NIL T)
+	(cons T (list Nil))				 ---> (T NIL)
+	(list '(T) Nil)					 ---> ((T) NIL)
+	(cons '(one two) '(free temp))	 ---> ((ONE TWO) FREE TEMP)
+\end{lstlisting}
+
+\section*{Задание 5}
+
+\begin{enumerate}[]
+	\item Написать функцию f(ar1 ar2 ar3 ar4), возвращающую ((ar1~ar2)~(ar3~ar4)).
+	\item Написать функцию f(ar1 ar2), возвращающую ((ar1)(ar2)).
+	\item Написать функцию f(ar1), возвращающую ((ar1))
+	\item Представить результаты в виде списочных ячеек.
+\end{enumerate}
+
+
+\begin{enumerate}[label=\arabic*.,wide=0pt]
+	\item Функция:
+	\begin{lstlisting}
+		(defun f(ar1 ar2 ar3 ar4)(cons (list ar1 ar2) (list (list ar3 ar4))))
+	\end{lstlisting}
+	Лямбда-выражение:
+	\begin{lstlisting}
+		(lambda (ar1 ar2 ar3 ar4)(cons (list ar1 ar2) (list (list ar3 ar4))))
+	\end{lstlisting}
+	\item  Функция:
+	\begin{lstlisting}
+		(defun f(ar1 ar2)(list(cons ar1 nil)(cons ar2 nil)))
+	\end{lstlisting}
+	Лямбда-выражение:
+	\begin{lstlisting}
+		(lambda (ar1 ar2)(list(cons ar1 nil)(cons ar2 nil)))
+	\end{lstlisting}
+	\item  Функция:
+	\begin{lstlisting}
+		(defun f(ar1)(list (cons ar1 nil)))
+	\end{lstlisting}
+	Лямбда-выражение:
+	\begin{lstlisting}
+		(lambda (ar1)(list (cons ar1 nil)))
+	\end{lstlisting}
+\end{enumerate}
+
+\img{160mm}{task5.pdf}{Задание 5}
+\FloatBarrier
+
 \end{document}

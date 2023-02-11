@@ -1,1 +1,6 @@
-(CAADR ' ((blue cube) (red pyramid)))
+(print(
+    cadadr '(
+        (blue cude) (red pyramid)
+    )
+)
+)
