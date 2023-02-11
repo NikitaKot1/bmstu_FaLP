@@ -1,0 +1,1 @@
+(CAADR ' ((blue cube) (red pyramid)))
