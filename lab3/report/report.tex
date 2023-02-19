@@ -1,0 +1,225 @@
+\documentclass[a4paper,14pt, unknownkeysallowed]{extreport}
+\usepackage{placeins}
+\include{preamble.inc}
+
+\begin{document}
+
+\include{00-title}
+
+\section*{Задание 1}
+
+\textbf{Написать функцию, которая принимает целое число и возвращает первое четное число, не меньшее аргумента.}
+
+\begin{lstlisting}
+(defun make_even (x)
+	( 	
+		if (evenp x)
+		x
+		(+ x 1)
+	)
+)
+\end{lstlisting}
+
+\section*{Задание 2}
+
+\textbf{Написать функцию, которая принимает число и возвращает число того же знака, но с модулем на 1 больше модуля аргумента.}
+
+\begin{lstlisting}
+(defun abs_plus_one (x)
+	(	
+		if (< x 0)
+		(- x 1)
+		(+ x 1)
+	)
+)
+\end{lstlisting}
+
+\clearpage
+
+\section*{Задание 3}
+
+\textbf{Написать функцию, которая принимает два числа и возвращает список из этих чисел, расположенный по возрастанию.}
+
+\begin{lstlisting}
+(defun make_increase_list (a b)
+	(
+		if (< a b)
+		(cons a (cons b Nil))
+		(cons b (cons a Nil))
+	)
+)
+\end{lstlisting}
+
+\section*{Задание 4}
+
+\textbf{Написать функцию, которая принимает три числа и возвращает Т только тогда, когда первое число расположено между вторым и третьим.}
+
+\begin{lstlisting}
+(defun is_first_between (first second third)
+	(
+		if 
+			(
+				or 
+				(and (> first second) (< first third))
+				(and (> first third) (< first second))
+			)
+		t
+		nil
+	)
+)
+\end{lstlisting}
+
+\FloatBarrier
+\section*{Задание 5}
+\textbf{Каков результат вычисления следующих выражений?}
+
+\begin{table}
+	\begin{center}
+		\begin{tabular}{|l|l|}
+			\hline
+			(and 'fee 'fie 'foe) & foe \\
+			\hline
+			(or nil 'fie 'foe) & fie \\
+			\hline
+			(and (equal 'abc 'abc) 'yes) & yes \\
+			\hline
+			(or 'fee 'fie 'foe) & fee \\
+			\hline
+			(and nil 'fie 'foe) & Nil \\
+			\hline
+			(or (equal 'abc 'abc) 'yes) & T \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\FloatBarrier
+
+\section*{Задание 6}
+
+\textbf{Написать предикат, который принимает два числа-аргумента и возвращает Т, если первое число не меньше второго.}
+
+\begin{lstlisting}
+(defun not_less (x y)
+	(>= x y)
+)
+\end{lstlisting}
+
+\section*{Задание 7}
+
+\textbf{Какой из следующих двух вариантов предиката ошибочен и почему?}
+
+\begin{enumerate}[label=\arabic*)]
+	\item (defun pred1 (x) (and (numberp x) (plusp x)))
+	\item (defun pred2 (x) (and (plusp x)(numberp x)))
+\end{enumerate}
+
+Вариант 2 ошибочен: в случае, если x не является числом, вызов функции plusp вызовет в программе ошибку.
+
+\section*{Задание 8}
+\textbf{Решить задачу 4, используя для ее решения конструкции: только IF, только COND, только AND/OR.}
+
+~~
+
+~~
+
+~~
+
+\textbf{IF:}
+
+\begin{lstlisting}
+(defun is_first_between (first second third)
+	(
+		if (> first second) 
+		(
+			if (< first third)
+			t
+			nil
+		)
+		
+		(
+			if (< first second) 
+			(
+				if (> first third)
+				t
+				nil
+			)
+		)
+	)
+)
+\end{lstlisting}
+
+\textbf{COND:}
+
+\begin{lstlisting}
+(defun is_first_between (first second third)
+	(
+		cond 
+		(
+			(> first second) 
+			(
+				cond ((< first third) t)
+				     (T nil)
+			)
+		)
+		
+		(
+			(< first second) 
+			(
+				cond ((> first third) t)
+					 (T nil)
+			)
+		)
+	))
+\end{lstlisting}
+
+\textbf{AND/OR:}
+
+\begin{lstlisting}
+(defun is_first_between (first second third)
+	(
+		or 
+		(and (> first second) (< first third))
+		(and (> first third) (< first second))
+	)
+)
+\end{lstlisting}
+
+\section*{Задание 9}
+
+\textbf{Переписать функцию how-alike, приведенную в лекции и использующую COND, используя только конструкции IF, AND/OR.}
+
+\textbf{IF:}
+
+\begin{lstlisting}
+(Defun how_alike (x y)
+	(
+		if (= x y) 'the_same
+		(
+			if (equal x y) 'the_same
+			(
+				if (oddp x)
+				(if (oddp y) 'both_odd 'difference)
+				(if (evenp y) 'both_even 'difference)
+			)
+		)
+	) 
+)
+\end{lstlisting}
+
+
+\textbf{AND/OR:}
+
+\begin{lstlisting}
+(Defun how_alike (x y)
+	(
+		or 
+		(and (or (= x y) (equal x y)) 'the_same)
+		(and (oddp x) (oddp y) 'both_odd)
+		(and (evenp x) (evenp y) 'both_even)
+		'difference 
+	) 
+)
+\end{lstlisting}
+
+\end{document}
