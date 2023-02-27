@@ -1,0 +1,338 @@
+\documentclass[a4paper,14pt, unknownkeysallowed]{extreport}
+\usepackage{placeins}
+\include{preamble.inc}
+
+\begin{document}
+
+\include{00-title}
+
+\section*{Задание 1}
+
+\textbf{Чем принципиально отличаются функции cons, list, append?}
+
+\begin{itemize}
+	\item cons --- принимает 2 аргумента. Если второй аргумент является списком, создает 1 списковую ячейку, значением которой является первый аргумент, а список -- ссылкой на второй аргумент (список). Если второй аргумент является атомом, создает точечную пару.
+	\item list --- принимает переменное количество аргументов. Создает столько списковых ячеек, сколько принято аргументов. Значением каждой списковой ячейки является значение принятых аргументов.
+	\item append --- принимает переменное количество аргументов. все аргументы, кроме последнего, должны быть списками. Возвращает новый список, содержащий конкатенацию копий. Списки остаются без изменений, копируется структура каждого списка, кроме последнего: он не копируется, а становится cdr последней точечной пары или возвращается напрямую, если нет предшествующих непустых списков.
+\end{itemize}
+
+\textbf{Пусть (setf lst1 '( a b c))
+	(setf lst2 '( d e)).\\
+	Каковы результаты вычисления следующих выражений?}
+
+\begin{itemize}
+	\item (cons lstl lst2) --- ((A B C) D E)
+	\item (list lst1 lst2) --- ((A B C) (D E))
+	\item (append lst1 lst2) --- (A B C D E)
+\end{itemize}
+
+\newpage
+
+\section*{Задание 2}
+
+\begin{itemize}
+	\item (reverse '(a b c)) 		--- (C B A) 
+	\item (reverse '(a b (c (d))))	--- ((C (D)) B A) 
+	\item (reverse '(a)) 			--- (A) 
+	\item (reverse ()) 				--- NIL
+	\item (reverse '((a b c))) 		--- ((A B C)) 
+	\item (last '(a b c)) 			--- (C) 
+	\item (last '(a)) 				--- (A) 
+	\item (last '((a b c))) 		--- ((A B C)) 
+	\item (last '(a b (c))) 		--- ((C)) 
+	\item (last ()) 				--- NIL
+\end{itemize}
+
+\section*{Задание 3}
+
+\textbf{Написать, по крайней мере, два варианта функции, которая возвращает последний элемент своего списка-аргумента.}
+
+\begin{lstlisting}
+(defun last_el (lst)
+	(car (last lst))
+)
+\end{lstlisting}
+
+\begin{lstlisting}
+(defun last_el (lst)
+	(car (reverse lst))
+)
+\end{lstlisting}
+
+\newpage
+
+\section*{Задание 4}
+
+\textbf{Написать, по крайней мере, два варианта функции, которая возвращает свой список аргумент без последнего элемента.}
+
+\begin{lstlisting}
+(defun without_last_el (lst)
+	(
+		reverse (cdr (reverse lst))
+	)
+)
+\end{lstlisting}
+
+\begin{lstlisting}
+(defun without_last_el (lst)
+	(
+		cond 
+		(
+			(cdr lst) 
+			(cons (car lst) (without_last_el (cdr lst)))
+		)
+		(
+			T
+			Nil
+		)
+	)
+)
+\end{lstlisting}
+
+\section*{Задание 5}
+
+\textbf{Напишите функцию swap-first-last, которая переставляет в списке-аргументе первый и последний элементы.}
+
+\begin{lstlisting}
+(defun swap_first_last (lst)
+	(
+		append 
+		(last lst)
+		(reverse (cdr (reverse (cdr lst))))
+		(cons (car lst) Nil)
+	)
+)
+\end{lstlisting}
+
+\section*{Задание 6}
+
+\textbf{Написать простой вариант игры в кости, в котором бросаются две правильные кости. Если сумма выпавших очков равна 7 или 11 --- выигрыш, если выпало (1,1) или (6,6) --- игрок имеет право снова бросить кости, во всех остальных случаях ход переходит ко второму игроку, но запоминается сумма выпавших очков. Если второй игрок не выигрывает абсолютно, то выигрывает тот игрок, у которого больше очков. Результат игры и значения выпавших костей выводить на экран с помощью функции print.}
+
+\begin{lstlisting}
+(defvar rs (make-random-state T))
+(defvar thr1)
+(defvar thr2)
+
+(defun bones_throw ()
+	(
+		list
+		(+ (random 6 rs) 1)
+		(+ (random 6 rs) 1)
+	)
+)
+
+(defun win_check (lst)
+	(
+		or
+		(   
+			= 
+			(+ (car lst) (cadr lst))
+			7
+		)
+		(   
+			= 
+			(+ (car lst) (cadr lst))
+			11
+		)
+	)
+)
+
+
+(defun pass_check (lst)
+	(
+		or
+		(   
+			and 
+			(= (car lst) 1)
+			(= (cadr lst) 1)
+		)
+		(   
+			and 
+			(= (car lst) 6)
+			(= (cadr lst) 6)
+		)
+	)
+)
+
+(defun gameplay2 ()
+	(princ "Second player throw: ") 
+	(setq thr2 (bones_throw))
+	(princ thr2)
+	(terpri)
+	(
+		cond 
+		(
+			(win_check thr2)
+			(princ "Second player wins!") 
+		)
+		(
+			(pass_check thr2)
+			(gameplay2)
+		)
+		(
+			T
+			(
+				cond
+				(
+					(
+						>
+						(+ (car thr1) (cadr thr1))
+						(+ (car thr2) (cadr thr2))
+					)
+					(princ "First player wins!") 
+				)
+				(
+					(
+						<
+						(+ (car thr1) (cadr thr1))
+						(+ (car thr2) (cadr thr2))
+					)
+					(princ "Second player wins!") 
+				)
+				(
+					T
+					(princ "Draw in the game!")
+				)
+			)
+		)
+	)
+)
+(defun gameplay1 ()
+	(princ "First player throw: ") 
+	(setq thr1 (bones_throw))
+	(princ thr1)
+	(terpri)
+	(
+		cond 
+		(
+			(win_check thr1)
+			(princ "First player wins!") 
+		)
+		(
+			(pass_check thr1)
+			(gameplay1)
+		)
+		(
+			T
+			(gameplay2)
+		)
+	)
+	(terpri)
+)
+(gameplay1)
+\end{lstlisting}
+
+\section*{Задание 7}
+
+\textbf{Написать функцию, которая по своему списку-аргументу lst определяет является ли он палиндромом (то есть равны ли lst и (reverse lst)).}
+
+\begin{lstlisting}
+(defun palindrom_check (lst)
+	(defun st_check (ls revls n)
+		(
+			cond
+			(
+				(> n 1)
+				(
+					and
+					(= (car ls) (car revls))
+					(st_check (cdr ls) (cdr revls) (- n 2))
+				)
+			)
+			(
+				T 
+				T
+			)
+		)
+	)
+	(st_check lst (reverse lst) (length lst))
+)
+\end{lstlisting}
+
+\section*{Задание 8}
+
+\textbf{Напишите свои необходимые функции, которые обрабатывают таблицу из 4-х точечных пар: (страна . столица), и возвращают по стране --- столицу, а по столице --- страну.}
+
+\newpage
+
+\begin{lstlisting}
+(defun countries_capitals (lst name)
+	(
+		cond 
+		(
+			(
+				equal
+				(caar lst)
+				name
+			)
+			(cdar lst)
+		)
+		(
+			(
+				equal
+				(cdar lst)
+				name
+			)
+			(caar lst)
+		)
+		(
+			(cdr lst)
+			(countries_capitals (cdr lst) name)
+		)
+	)
+)
+\end{lstlisting}
+
+\section*{Задание 9}
+
+\textbf{Напишите функцию, которая умножает на заданное число-аргумент первый числовой элемент списка из заданного 3-х элементного списка- аргумента, когда
+	a) все элементы списка --- числа,
+	6) элементы списка -- любые объекты}
+
+\begin{lstlisting}
+(defun mult_el_a (n lst)
+	(
+		cond 
+		(
+			(
+				and
+				(
+					and
+					(numberp (car lst))
+					(
+						and
+						(numberp (cadr lst))
+						(numberp (caddr lst))
+					)
+				)
+				(numberp n)
+			)
+			(* (car lst) n)
+		)
+		(
+			T 
+			Nil
+		)
+	)
+)
+
+(defun mult_el_b (n lst)
+	(
+		cond 
+		(
+			(
+				and
+				(numberp (car lst))
+				(numberp n)
+			)
+			(* (car lst) n)
+		)
+		(
+			T 
+			Nil
+		)
+	)
+)
+\end{lstlisting}
+
+\end{document}

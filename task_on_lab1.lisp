@@ -1,0 +1,5 @@
+(defun x () 9)
+(defvar x 'y)
+(defvar y 'x)
+(defun y () 7)
+(print (funcall (eval x)))
