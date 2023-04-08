@@ -6,5 +6,48 @@
 
 \include{00-title}
 
+Разработать свою программу - «Телефонный справочник». Абоненты могут иметь
+несколько телефонов. Протестировать работу программы, используя разные вопросы.
+
+• «Телефонный справочник»: Фамилия, №тел, Адрес – структура (Город, Улица, Noдома,
+Noкв),
+
+• «Автомобили»: Фамилия\_владельца, Марка, Цвет, Стоимость, Номер.
+Владелец может иметь несколько телефонов, автомобилей (Факты). В разных городах
+есть однофамильцы, в одном городе – фамилия уникальна.
+
+Используя конъюнктивное правило и простой вопрос, обеспечить возможность
+поиска:
+
+• По Марке и Цвету автомобиля найти Фамилию, Город, Телефон .
+
+\begin{lstlisting}
+domains
+	adress = addr(string, string, integer, integer).
+predicates
+	record(string, integer, adress)
+	auto(string, string, string, integer, string)
+clauses
+	record("Kupchev", 131, addr("Krasnog", "Lesnaya", 15, 6)).
+	record("Kupchev", 222,  addr("Krasnog", "Lesnaya", 15, 6)).
+	record("Allanov", 341,  addr("Moscow", "Armand", 79, 122)).
+	record("Cherbov", 441,  addr("Moscow", "Golub", 140, 15)).
+	record("Cherbov", 476,  addr("Moscow", "Golub", 140, 15)).
+	record("Lochkarev", 544,  addr("Moscow", "Dorms 5", 655, 89)).
+	record("Lochkarev", 194,  addr("Moscow", "Dorms 5", 655, 89)).
+	record("Ivanov", 656,  addr("Ekaterinburg", "Sovet", 140, 3)).
+	auto("Kupchev", "lada", "red", 150000, "oa200b").
+	auto("Kupchev", "kivi", "green", 1532100, "oa200x").
+	auto("Ivanov", "mers", "black", 2000000, "lok333i").
+	auto("Allanov", "volga", "rust", 10000, "lo723l").
+	auto("Allanov", "porsh", "yellow", 1009900, "lo063l").
+	auto("Cherbov", "ferra", "red", 15000000, "om999l").
+	auto("Lochkarev", "porsh", "grey", 124000, "ad123a").
+	auto("Ivanov", "jiguul", "white", 150000, "qw123r").
+	auto("Ivanov", "lowk", "black", 155500, "qw023r").
+goal	
+	auto(Name, "porsh", "grey", _, _), record(Name, Phone,  addr(Town, _, _, _)).
+	
+\end{lstlisting}
 
 \end{document}
