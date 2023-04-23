@@ -1,0 +1,118 @@
+\documentclass[a4paper,14pt, unknownkeysallowed]{extreport}
+\usepackage{placeins}
+\include{preamble.inc}
+
+\begin{document}
+
+\include{00-title}
+
+\section*{Задание 1}
+Создать базу знаний «Предки», позволяющую наиболее эффективным способом
+(за меньшее количество шагов, что обеспечивается меньшим количеством предложений БЗ - правил), и используя разные варианты (примеры) простого вопроса определить:
+\begin{enumerate}
+	\item по имени субъекта определить всех его бабушек,
+	\item по имени субъекта определить всех его дедушек,
+	\item по имени субъекта определить всех его бабушек и дедушек,
+	\item по имени субъекта определить его бабушку по материнской линии,
+	\item по имени субъекта определить его бабушку и дедушку по материнской линии.
+\end{enumerate}
+
+\begin{lstlisting}
+parent(olga, oleg, f).
+parent(ivan, oleg, m).
+parent(oleg, yaroslav, m).
+parent(inga, yaroslav, f).
+parent(oleg, kate, m).
+parent(inga, kate, f).
+parent(nikita, georg, m).
+parent(sveta, georg, f).
+parent(yaroslav, stepan, m).
+parent(irina, stepan, f).
+parent(georg, sergey, m).
+parent(kate, sergey, f).
+parent(georg, alex, m).
+parent(kate, alex, f).
+parent(georg, nika, m).
+parent(kate, nika, f).
+grandparent(X, Y)   :- parent(X, Z, _), parent(Z, Y, _).
+grandmother(X, Y)   :- parent(X, Z, f), parent(Z, Y, _).
+grandfather(X, Y)   :- parent(X, Z, m), parent(Z, Y, _).
+maternal_grandmother(X, Y) :- parent(X, Z, f), parent(Z, Y, f).
+maternal_grandparent(X, Y) :- parent(X, Z, _), parent(Z, Y, f).	
+\end{lstlisting}
+
+\section*{Задание 2}
+
+Дополнить базу знаний правилами, позволяющими найти
+\begin{enumerate}
+	\item Максимум из двух чисел
+	\begin{enumerate}
+		\item без использования отсечения,
+		\item с использованием отсечения;
+	\end{enumerate}
+	\item Максимум из трех чисел
+	\begin{enumerate}
+		\item без использования отсечения,
+		\item с использованием отсечения;
+	\end{enumerate}
+\end{enumerate}
+
+\begin{lstlisting}
+max2(N1, N2, N2)    :- N2 >= N1.
+max2(N1, N2, N1)    :- N1 >= N2.
+
+max3(N1, N2, N3, N1)    :- N1 >= N2, N1 >= N3.
+max3(N1, N2, N3, N2)    :- N2 >= N1, N2 >= N3.
+max3(N1, N2, N3, N3)    :- N3 >= N1, N3 >= N2.
+
+max2clip(N1, N2, N2)    :- N2 >= N1, !.
+max2clip(N1, _, N1).
+
+max3clip(N1, N2, N3, N1)   :- N1 >= N2, N1 >= N3, !.
+max3clip(_, N2, N3, N2)    :- N2 >= N3, !.
+max3clip(_, _, N3, N3).
+\end{lstlisting}
+
+\begin{table}[ht!]
+	\centering
+	\label{decisions}
+	\begin{tabular}{|p{1.1cm}|p{5cm}|p{6cm}|p{5cm}|}
+		\hline
+		\textbf{Шаг} & \textbf{Состояние резольвенты} & \textbf{Для каких термов запускается алгоритм унификации и результат подстановки} & \textbf{Дальнейшие действия: прямой ход или откат}\\
+		\hline
+		1 & max3(3, 2, 1, Asw) & max3(3, 2, 1, Asw) = max2(N1, N2, N2) Подстановка: нет & Откат \\
+		\hline
+		... & & & \\
+		\hline
+		3 & 3 >= 2, 3 >= 1 & max3(3, 2, 1, Asw) = max3(N1, N2, N3, N1) Подстановка:\{N1=3; N2=2; N3=1; Asw=3\} & Прямой ход \\
+		\hline
+		4 & 3 >= 1 & 3 >= 2 Верно. Подстановка:\{N1=3; N2=2; N3=1; Asw=3\} & Прямой ход \\
+		\hline
+		5 & Пусто & 3 >=1 Верно. Подстановка:\{N1=3; N2=2; N3=1; Asw=3\} & Конкретизация Asw. Откат к пункту 3. Дальнейшее продолжение перебора. \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[ht!]
+	\centering
+	\label{decisions}
+	\begin{tabular}{|p{1.1cm}|p{5cm}|p{6cm}|p{5cm}|}
+		\hline
+		\textbf{Шаг} & \textbf{Состояние резольвенты} & \textbf{Для каких термов запускается алгоритм унификации и результат подстановки} & \textbf{Дальнейшие действия: прямой ход или откат}\\
+		\hline
+		1 & max3clip(2, 3, 1, Asw) & max3clip(2, 3, 1, Asw) = max2(N1, N2, N2) Подстановка: нет & Откат \\
+		\hline
+		... & & & \\
+		\hline
+		8 & 2 >= 3, 2 >= 1 & max3clip(2, 3, 1, Asw) = max3clip(N1, N2, N3, N1) Подстановка:\{N1=2; N2=3; N3=1; Asw=2\} & Прямой ход \\
+		\hline
+		9 & 2 >= 1 & 2 >= 3 Неверно. & Откат к пункту 8 \\
+		\hline
+		10 & 3 >= 1 & max3clip(2, 3, 1, Asw) = max3clip(\_, N2, N3, N2) Подстановка: \{N2=3; N3=1; Asw=3\} & Прямой ход \\
+		\hline
+		11 & Пусто & 3 >= 1 Верно. Подстановка: \{N2=3; N3=1; Asw=3\} & Конкретизация Asw. Оператор отсечения. Откат к пункту 8. Завершение работы.\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\end{document}
