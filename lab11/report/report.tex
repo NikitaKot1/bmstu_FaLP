@@ -1,0 +1,103 @@
+\documentclass[a4paper,14pt, unknownkeysallowed]{extreport}
+\usepackage{placeins}
+\include{preamble.inc}
+
+\begin{document}
+
+\include{00-title}
+
+\section*{Задание 1}
+
+\begin{enumerate}
+	\item Найти длину списка (по верхнему уровню);
+	\item Найти сумму элементов числового списка;
+	\item Найти сумму элементов числового списка, стоящих на нечетных позициях исходного
+	списка (нумерация от 0);
+	\item Сформировать список из элементов числового списка, больших заданного значения;
+	\item Удалить заданный элемент из списка (один или все вхождения).
+	\item Объединить два списка.
+\end{enumerate}
+
+
+\begin{lstlisting}
+my_length(List, Length) :- my_length(List, 0, Length).
+my_length([], Acc, Acc) :- !.
+my_length([_|T], Acc, Length) :- !,
+	NewAcc is Acc + 1,
+	my_length(T, NewAcc, Length).
+
+my_sum_list(List, Sum) :- my_sum_list(List, 0, Sum), !.
+my_sum_list([], Acc, Acc) :- !.
+my_sum_list([H|T], Acc, Sum) :- 
+	NewAcc is Acc + H,
+	my_sum_list(T, NewAcc, Sum).
+
+my_odd_sum(List, Sum) :- !,
+	my_odd_sum(List, 0, Sum).
+my_odd_sum([], Sum, Sum) :- !.
+my_odd_sum([_], Sum, Sum).
+my_odd_sum([_, X|T], Acc, Sum) :-
+	NewAcc is Acc + X,
+	my_odd_sum(T, NewAcc, Sum).
+
+new_big_list([], _, []) :- !.
+new_big_list([X|Xs], Y, [X|Ys]) :- X > Y, !, new_big_list(Xs, Y, Ys).
+new_big_list([X|Xs], Y, Ys) :- !, new_big_list(Xs, Y, Ys).
+
+del_member(_, [], []) :- !.
+del_member(X, [X|Tail], Tail) :- !.
+del_member(X, [Y|Tail], [Y|Tail1]) :-
+	del_member(X, Tail, Tail1).
+
+del_all_member(_, [], []) :- !.
+del_all_member(X, [X|Tail], Result) :- !,
+	del_all_member(X, Tail, Result).
+del_all_member(X, [Y|Tail], [Y|Tail1]) :- del_all_member(X, Tail, Tail1).
+
+concratinate_lists([], L, L) :- !.
+concratinate_lists([H|T], L, [H|Result]) :- concratinate_lists(T, L, Result).
+\end{lstlisting}
+
+
+
+\begin{table}[]
+	\centering
+	\caption{Задание 1}
+	\label{task1}
+	\begin{tabular}{|p{0.8cm}|p{4cm}|p{7.5cm}|p{4cm}|}
+		\hline
+		\textbf{N} & \textbf{Состояние резольвенты} & \textbf{Для каких термов запускается алгоритм унификации и результат подстановки} & \textbf{Дальнейшие действия} \\ 
+		\hline
+		1 & my\_length([1,2,3], Res). & my\_length([1,2,3], 0). Результат: Унификация прошла успешно, переменная Acc принимает значение 0. & Прямой ход. Создается новое состояние резольвенты с целью my\_length([1, 2,3], Acc, Res), Res = Length, Acc = 0. \\
+		\hline
+		2 & my\_length([1,2,3], Acc, Res), Res = Length, Acc = 0. & my\_length([1,2,3], 0). Результат: Унификация прошла успешно, переменная Acc принимает значение 0. & Прямой ход. Создается новое состояние резольвенты с целью my\_length([1, 2,3], Acc, Res), Res = Length, Acc = 0. \\
+		\hline
+		2 & my\_length([2,3], 1, Res). & my\_length([2,3], 1, Length). Результат: Унификация прошла успешно, переменная Acc принимает значение 1. & Прямой ход. Создается новое состояние резольвенты с целью my\_length([3], 2, Res). \\
+		\hline
+		3 & my\_length(List, Acc, Res), Res=0, Acc=1, List=[2,3]. &my\_lengthh(List, Acc, Res)my\_lengthth([\_|T],Acc, Length). Результат: Унификация прошла успешно, переменная NewAcc принимает значение Acc + 1 = 2, List=T. & Прямой ход. Создается новое состояние резольвенты с целью my\_length(List, Acc, Rew), Res = Res, Acc=NewAcc, List=T. \\
+		\hline
+		
+	\end{tabular}
+\end{table}
+
+
+\begin{table}[]
+	\centering
+	\caption{Задание 1}
+	\label{task1}
+	\begin{tabular}{|p{0.8cm}|p{4cm}|p{7.5cm}|p{4cm}|}
+		\hline
+		\textbf{N} & \textbf{Состояние резольвенты} & \textbf{Для каких термов запускается алгоритм унификации и результат подстановки} & \textbf{Дальнейшие действия} \\ 
+		\hline
+		4 & my\_length(List, Acc, Res), Res=0, Acc=2, List=[3]. &my\_lengthh(List, Acc, Res)my\_lengthth([\_|T],Acc, Length). Результат: Унификация прошла успешно, переменная NewAcc принимает значение Acc + 1 = 3, List=T. & Прямой ход. Создается новое состояние резольвенты с целью my\_length(List, Acc, Rew), Res = Res, Acc=NewAcc, List=T. \\
+		\hline
+		5 & my\_length(List, Acc, Res), Res=0, Acc=3, List=[] &my\_lengthh([], Acc, Acc). Результат: Унификация прошла успешно, переменная Acc принимает значение 3. & Обратный ход. Возвращаемся к состоянию 4, где выполняется подстановка: Res=3. \\
+		\hline
+		6 & my\_length(List, Acc, Res), Res=3, Acc=3, List=[] &my\_lengthh([], Acc, Acc). Результат: Унификация прошла успешно. & Обратный ход. Возвращаемся к состоянию 3, где выполняется подстановка: Res=3. \\
+		\hline
+		7 & my\_length([1,2,3], Res). &my\_lengthh([1,2,3], 0). Результат: Унификация прошла успешно. & Обратный ход. Возвращаемся к состоянию 2, где выполняется подстановка: Length=3. \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\end{document}
